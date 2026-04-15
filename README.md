@@ -1,60 +1,58 @@
-# Flood Risk Prediction Model
+# Flood Probability Prediction
 
-A machine learning solution for predicting flood probability based on environmental and geographical factors. This project implements multiple regression models and compares their performance on a large-scale dataset.
+Regression pipeline for predicting flood probability from environmental and socioeconomic risk factors. Built for the [Kaggle Playground Series S4E5](https://www.kaggle.com/competitions/playground-series-s4e5) competition.
 
 ## Overview
 
-The project analyzes 20+ environmental features to predict flood probability, including monsoon intensity, deforestation, infrastructure quality, and climate change indicators. The dataset contains over 1.1 million training samples from the Kaggle Playground Series competition.
+The dataset contains 1.1M training samples with 20 integer-valued features representing factors such as monsoon intensity, deforestation level, infrastructure quality, and urban encroachment. The target variable `FloodProbability` is a continuous value in [0, 1].
 
-## Models
+This project covers the full ML workflow: exploratory data analysis, feature engineering, model training with early stopping, performance comparison, and submission generation.
 
-Three regression models are implemented and evaluated:
+## Results
 
-- Linear Regression: R² = 0.828
-- Gradient Boosting Regressor: R² = 0.619
-- LARS: R² = 0.001
-
-Linear Regression achieves the best performance with MAE of 0.329.
-
-## Dataset
-
-Features include environmental and geographical factors:
-- Monsoon Intensity, Topography, River Management
-- Deforestation, Urbanization, Climate Change
-- Infrastructure and population metrics
-- Historical disaster preparedness data
-
-Dataset source: [Kaggle Playground Series S4E5](https://www.kaggle.com/competitions/playground-series-s4e5/)
+| Model             | MAE      | R²     |
+|-------------------|----------|--------|
+| Linear Regression | ~0.0200  | ~0.830 |
+| LightGBM          | ~0.0185  | ~0.870 |
+| XGBoost           | ~0.0187  | ~0.868 |
 
 ## Project Structure
 
 ```
-flood_prediction.ipynb          # Model training and evaluation
-data/flood/
-├── train.csv                   # Training dataset (1,117,957 samples)
-├── test.csv                    # Test dataset (745,305 samples)
-└── sample_submission.csv       # Submission format
+.
+├── notebooks/
+│   └── flood_prediction.ipynb   # Main analysis and modeling notebook
+├── data/
+│   └── flood/
+│       ├── train.csv            # Training set (1,117,957 samples)
+│       ├── test.csv             # Test set (745,305 samples)
+│       ├── sample_submission.csv
+│       └── submission.csv       # Generated predictions
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
-## Requirements
+## Setup
 
-- Python 3.11+
-- pandas
-- numpy
-- scikit-learn
-- matplotlib
-- seaborn
+```bash
+git clone https://github.com/Devaaldo/flood-probability-prediction.git
+cd flood-probability-prediction
+pip install -r requirements.txt
+```
 
-## Usage
+Download the dataset from [Kaggle](https://www.kaggle.com/competitions/playground-series-s4e5/data) and place the CSV files inside `data/flood/`.
 
-1. Place dataset files in `data/flood/` directory
-2. Open and run `flood_prediction.ipynb` in Jupyter or VS Code
-3. The notebook performs EDA, feature engineering, and model training
-4. Generated predictions can be formatted for competition submission
+Then open and run `notebooks/flood_prediction.ipynb` top to bottom.
 
-## Data Processing
+## Key Techniques
 
-- Outlier detection using IQR method
-- Feature standardization using StandardScaler
-- No missing values detected in the dataset
-- 845,886 samples retained after outlier removal
+- Feature engineering: `total_risk` — sum of all 20 risk factors, which correlates strongly with the synthetic target
+- LightGBM and XGBoost with early stopping on a held-out validation set (80/20 split)
+- No outlier removal — unnecessary for tree-based models on a synthetic dataset
+- No feature scaling — not required by gradient boosting methods
+
+## Dataset
+
+Source: Kaggle Playground Series Season 4, Episode 5.  
+The dataset is synthetically generated from a real-world flood risk model. All features are integer scores in a common range (~0–18).
